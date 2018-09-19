@@ -3,6 +3,7 @@ package com.example.delivery.delivery.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,7 @@ public class DeliveryListActivity extends AppCompatActivity implements InternetC
     private Context mContext;
     private RecyclerView mRvList;
     private ProgressBar mProgressBar;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private boolean mInternetConnected;
 
@@ -71,6 +73,10 @@ public class DeliveryListActivity extends AppCompatActivity implements InternetC
 
     private void init() {
         mContext = DeliveryListActivity.this;
+
+        mSwipeRefreshLayout = findViewById(R.id.swipe_refresh);
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimary));
+        mSwipeRefreshLayout.setOnRefreshListener(onRefreshListener);
 
         mRvList = findViewById(R.id.recycler_view_delivery);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
@@ -118,14 +124,29 @@ public class DeliveryListActivity extends AppCompatActivity implements InternetC
         }
     }
 
+    private void disableSwipeToRefresh() {
+        if(mSwipeRefreshLayout.getVisibility() == View.VISIBLE && mSwipeRefreshLayout.isRefreshing())
+            mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            mSwipeRefreshLayout.setRefreshing(true);
+            mDeliveryListAdapter.removeAll();
+            checkNetworkConnection();
+        }
+    };
+
     @Override
     public void onConnectionListener(int status) {
-        mInternetConnected = status == Constant.CONNECTED ? true : false;
+        mInternetConnected = status == Constant.CONNECTED;
         switch (status) {
             case Constant.CONNECTED:
-                mDeliveryListPresenter.getDeliveryList(mInternetConnected, 0, 20, true);
+                mDeliveryListPresenter.getDeliveryList(mInternetConnected, 0, Constant.LIMIT, mSwipeRefreshLayout.isRefreshing() ? false : true);
                 break;
             default:
+                disableSwipeToRefresh();
                 new Popup(mContext, this)
                         .showDialog(getString(R.string.msg_dialog_title), getString(R.string.msg_dialog_message));
                 break;
@@ -135,12 +156,14 @@ public class DeliveryListActivity extends AppCompatActivity implements InternetC
     @Override
     public void onDeliveryListError() {
         Utility.showToast(mContext, getString(R.string.err_message));
+        disableSwipeToRefresh();
         mDeliveryListAdapter.removeItem();
     }
 
     @Override
     public void onDeliveryListSuccess(List<Delivery> deliveries) {
         Log.e(TAG, "_log : onDeliveryListSuccess : size : " + deliveries.size());
+        disableSwipeToRefresh();
         bindData(deliveries);
     }
 
@@ -163,7 +186,7 @@ public class DeliveryListActivity extends AppCompatActivity implements InternetC
     @Override
     public void onPaginate() {
         if(mInternetConnected) {
-            mDeliveryListPresenter.getDeliveryList(mInternetConnected, mDeliveryListAdapter.getmDeliveryList().size(), 20, false);
+            mDeliveryListPresenter.getDeliveryList(mInternetConnected, mDeliveryListAdapter.getmDeliveryList().size(), Constant.LIMIT, false);
             mDeliveryListAdapter.addItem(null);
         }
     }
@@ -175,7 +198,7 @@ public class DeliveryListActivity extends AppCompatActivity implements InternetC
 
     @Override
     public void onPositiveButtonClick() {
-        mDeliveryListPresenter.getDeliveryList(mInternetConnected, 0, 20, true);
+        mDeliveryListPresenter.getDeliveryList(mInternetConnected, Constant.OFFSET, Constant.LIMIT, true);
     }
 
     @Override

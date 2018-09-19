@@ -43,7 +43,7 @@ public class DeliveryListPresenter implements DeliveryListListener.DeliveryListe
 
             mDeliveryListListener.getDeliveryList(offset, limit, this);
         } else {
-            mDeliveryListListener.getDeliveryListOffline(mContext, offset, offset + limit/*limit*/, this);
+            mDeliveryListListener.getDeliveryListOffline(mContext, offset, limit, this);
         }
     }
 

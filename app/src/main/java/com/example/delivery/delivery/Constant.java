@@ -8,4 +8,7 @@ public class Constant {
 
     public static final int CONNECTED = 1;
     public static final int NOT_CONNECTED = 2;
+
+    public static final int OFFSET = 0;
+    public static final int LIMIT = 20;
 }
