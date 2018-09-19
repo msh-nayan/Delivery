@@ -45,7 +45,7 @@ public class ViewHolderDelivery extends RecyclerView.ViewHolder implements View.
         mDelivery = delivery;
 
         String message = !TextUtils.isEmpty(mDelivery.getDescription()) ? mDelivery.getDescription() : "";
-        mTvDescription.setText(mDelivery.getId() + " || " + message);
+        mTvDescription.setText(message);
 
         Utility.loadImage(mContext, mCivDelivery, mDelivery.getImageUrl());
     }
