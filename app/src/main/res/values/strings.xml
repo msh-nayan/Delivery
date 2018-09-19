@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Delivery</string>
+
+    <string name="msg_no_interet">No Connection. Kindly Check Your Internet Connection.</string>
+    <string name="msg_loading">Please Wait, Loading Delivery List</string>
+    <string name="err_message">Something went wrong</string>
+    <string name="msg_dialog_title">No Internet Connection</string>
+    <string name="msg_dialog_message">We\'ve offline feature. Do You want to get data from local database?</string>
+    <string name="msg_db_empty_title">Empty database</string>
+    <string name="msg_db_empty_message">No data found on database.</string>
+    <string name="msg_delivery_details">Delivery Details</string>
+    <string name="msg_default_marker">User</string>
+    <string name="msg_default_address">Address</string>
+    <string name="msg_description">%1$s at %2$s</string>
+</resources>
